@@ -151,7 +151,7 @@ GGally::ggpairs(charity_data)
 ```
 
 
-## Exercise 6 - Documenting in R Markdown
+## Exercise 6 - Documenting in Quarto
 
 ```{r}
 # Render this document into a HTML file using the 'Render' button
