@@ -53,19 +53,20 @@ The course is ideal for someone who is likely to study quantitative social scien
 
 | Time          | Activity         | Led by       |
 | :------------ | :--------------- | :----------  |
-| 08:30 - 09:15 | [Preliminaries](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/talks/1-preliminaries.html#1)      | Keith McNulty |
-|               | - Welcome and intros   | |
-|               | - Review of R fundamentals ([Assignment Solutions](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/module-exercises/01-R_fundamentals---SOLUTIONS.html))  | |
-| 09:15 - 10:30 | [Statistical Inference and Linear Regression](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/talks/2-inference_and_linear_regression.html#1) | Keith McNulty |
-|               | - Statistical inference and hypothesis testing ([Assignment Solutions](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/module-exercises/02A-Statistical_Inference---SOLUTIONS.html))   | |
-|               | - Linear regression ([Assignment Solutions](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/module-exercises/02B-Linear_regression---SOLUTIONS.html)) | |
+| 08:30 - 09:15 | [Preliminaries](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/1-preliminaries.html#1) |
+|               | - Welcome and intros   | 
+|               | - Review of R fundamentals ([Assignment Solutions](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/module-exercises/01-R_fundamentals - SOLUTIONS.html))  | 
+| 09:15 - 10:30 | [Statistical Inference and Linear Regression](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/2-inference_and_linear_regression.html#1) | 
+|               | - Statistical inference and hypothesis testing ([Assignment Solutions](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/module-exercises/02A-Statistical_Inference---SOLUTIONS.html))   | 
+|               | - Linear regression ([Assignment Solutions](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/module-exercises/02B-Linear_regression---SOLUTIONS.html)) | 
 | 10:30 - 10:45 | *Coffee break*    | |
-| 10:45 - 11:45 | [Binomial and Ordinal Logistic Regression](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/talks/3-binomial_and_ordinal_regression.html) | Jordan Sparks |
-|               | - Binomial logistic regression ([Assignment Solutions](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/module-exercises/03A-Binomial_regression---SOLUTIONS.html)) | |
-|               | - Ordinal regression ([Assignment Solutions](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/module-exercises/03B-Ordinal_regression---SOLUTIONS.html)) | |
+| 10:45 - 11:45 | [Binomial and Ordinal Logistic Regression](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/3-binomial_and_ordinal_regression.html) | 
+|               | - Binomial logistic regression ([Assignment Solutions](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/module-exercises/03A-Binomial_regression---SOLUTIONS.html)) | 
+|               | - Ordinal regression ([Assignment Solutions](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/module-exercises/03B-Ordinal_regression---SOLUTIONS.html)) | 
 | 11:45 - 12:00 | Follow up and closing
-|               | - Additional resources on advanced methods ([Assignment Solutions](https://rstudio-conf-2022.github.io/people-analytics-rstats/materials/module-exercises/04-survival_analysis-SOLUTIONS.html))                    | |
-|               | - Optional take home project              | |
+|               | - [Additional resources on advanced methods](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/4-advanced_explanatory_methods.html#1)           |
+|               | - ([Assignment Solutions](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/module-exercises/04-survival_analysis-SOLUTIONS.html))                    | 
+|               | - [Optional take home project](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/05-Project_Grocery_Evaluations.html#1)              | 
 
 
 ## Instructor
