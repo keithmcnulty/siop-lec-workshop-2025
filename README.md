@@ -51,8 +51,8 @@ The course is ideal for someone who is likely to study quantitative social scien
 
 ## Schedule
 
-| Time          | Activity         | Led by       |
-| :------------ | :--------------- | :----------  |
+| Time          | Activity         | 
+| :------------ | :--------------- | 
 | 08:30 - 09:15 | [Preliminaries](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/1-preliminaries.html#1) |
 |               | - Welcome and intros   | 
 |               | - Review of R fundamentals ([Assignment Solutions](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/module-exercises/01-R_fundamentals - SOLUTIONS.html))  | 
