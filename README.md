@@ -46,8 +46,11 @@ The course is ideal for someone who is likely to study quantitative social scien
 
 ## Prework
 
-* **Essential:**  Register for a Posit Cloud account at https://posit.cloud
-* *Optional:* Review the module on R fundamentals to ensure that you have a basic familiarity with how R works.
+* **Essential:**  
+ - Use this [invite link](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) to access the course exercises which we will go through during the workshop.  
+ - As part of this process, you may be asked to create an account on Posit Cloud if you don't already have one.  Go ahead and do so.
+ - If you are not familiar with the RStudio programming environment, watch the following [short video](https://youtu.be/tHHhVeQgYOU?si=7gYQoZFuuOcaSRFx) which will help to orient you on the various components of the display.  
+* *Optional:* Review the module on [R fundamentals](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/1-preliminaries.html#1) or read [this book chapter](https://peopleanalytics-regression-book.org/the-basics-of-the-r-programming-language.html) to ensure that you have a basic familiarity with how R works.
 
 
 ## Schedule
