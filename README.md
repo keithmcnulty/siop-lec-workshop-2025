@@ -1,7 +1,8 @@
+<img src="https://www.siop.org/wp-content/uploads/2024/10/2025_LEC_logo_stack_cmyk.png" height="200" alt="SIOP LEC 2025 logo">
+
+
 Introduction to Explanatory Statistical Modeling in R
 ================
-
-<img src="https://www.siop.org/wp-content/uploads/2024/10/2025_LEC_logo_stack_cmyk.png" height="200" alt="SIOP LEC 2025 logo">
 
 by Keith McNulty
 
