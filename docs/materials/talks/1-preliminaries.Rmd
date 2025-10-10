@@ -1,0 +1,419 @@
+---
+title: "Explanatory Statistical Modeling in R"
+subtitle:  "Introduction and R Fundamentals"
+author: "Keith McNulty"
+output:
+  xaringan::moon_reader:
+    css: "style.css"
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+
+class: left, middle, lec-logo, bigfont
+
+## Good morning and welcome!
+
+What I hope you can say at the end of this workshop: 
+
+&#129489;&#8205;&#127891; You've learned a lot about some important methods for your work  
+&#127881; You've had fun  
+&#128075; You've met a few interesting people who work on similar things to you
+
+
+---
+class: left, lec-logo, middle,  
+
+# About this workshop
+
+---
+class: left, lec-logo, middle,  
+
+## Introducing ourselves
+
+Let's find out:
+
+1.  Who you are
+2.  Where you are from
+3.  What you do
+4.  What you hope to get from this morning's sessions
+
+---
+class: left, lec-logo, middle,  
+
+## Explanatory modeling: what is it?
+
+Explanatory modeling uses a sample of data to draw inferences about the potential causes of an outcome of interest.  It is also sometimes called *inferential modeling*.
+
+<b>Examples:</b>  
+
+* Does working schedule and/or pay rate influence likelihood to leave an organization?
+* Does academic performance in earlier years of a program influence academic performance in the final year?
+* Do certain demographic factors influence choice of career?
+
+---
+class: left, lec-logo, middle,  
+
+## Explanatory modeling: what we will learn
+
+We will focus on regression analysis as a way to <i>explain</i> outcomes of interest using data.  You will learn:
+
+1.  How to choose an appropriate model type for the problem at hand.
+2.  How to prepare your data for your model.
+3.  How to execute the model.
+4.  How to view a variety of outputs from the model.
+5.  How to interpret those outputs against the problem at hand.
+
+
+---
+class: left, middle, lec-logo, reallybigfont 
+
+## How we will learn
+
+&#128105;&#8205;&#127979;  Talks and instruction
+
+&#128104;&#127997;&#8205;&#128187; Frequent short coding exercises 
+
+&#129337; A small project to take away with you 
+
+&#128562; A few other things
+
+---
+class: left, middle, lec-logo, middle 
+
+## Don't panic 🤯
+
+We are limited on time today - I'll likely have to skim over some things.
+
+An in-depth treatment of everything we do today (and more!) can always be found in the free online version of my textbook [Handbook of Regression Modeling in People Analytics](https://peopleanalytics-regression-book.org/).
+
+After you leave our session, use this as a reference text for everything we do today.
+
+
+
+---
+class: left, lec-logo, middle,  
+
+# Foundations:  Working with people data in R
+
+
+---
+class: left, lec-logo, middle,  
+
+## Data types - numeric
+
+```{r}
+# numeric double
+my_double <- 42.3
+
+# use typeof() to find out the data type of a scalar value
+typeof(my_double)
+```
+
+```{r}
+# numeric integer
+my_integer <- 42L
+typeof(my_integer)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data types - character and logical
+
+```{r}
+# character is any string in quotes
+my_name <- "Keith"
+typeof(my_name)
+```
+
+```{r}
+# logical is TRUE or FALSE
+at_siop_lec <- TRUE
+typeof(at_siop_lec)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - numeric, character and logical vectors
+
+```{r}
+# vectors are 1-dimensional homogeneous structures (same data type)
+first_primes <- c(2, 3, 5, 7, 11)
+
+# use str() to get info about data structures
+str(first_primes)
+```
+
+```{r}
+# character vector
+popstars <- c("Katy Perry", "Taylor Swift", "Harry Styles", "Charli XCX")
+str(popstars)
+```
+
+```{r}
+# logical vector
+popstars_keith_likes <- c(FALSE, FALSE, FALSE, TRUE)
+str(popstars_keith_likes)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - categorical (factor) vectors
+
+```{r}
+# categorical or factor vectors store a limited set of categorical values
+popstars_factor <- as.factor(popstars)
+str(popstars_factor)
+```
+
+```{r}
+# if the categories have order, you can specify the order
+performance <- c("Low", "High", "Medium", "High", "Low")
+ordered_performance <- ordered(
+  performance, 
+  levels = c("Low", "Medium", "High")
+)
+str(ordered_performance)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - type coercion
+
+```{r}
+# what happens if we try to put heterogeneous data in a vector
+mixed_types_1 <- c(6.75, "Keith")
+str(mixed_types_1)
+```
+
+```{r}
+# some form of type coercion occurs
+mixed_types_2 <- c(TRUE, 6.3)
+str(mixed_types_2)
+```
+
+```{r}
+# if you add an unknown element to a defined factor vector
+new_popstars <- c(popstars_factor, "Lady Gaga")
+str(new_popstars)
+```
+
+```{r}
+# use type conversion functions to control coercion
+new_popstars <- c(as.character(popstars_factor), "Lady Gaga")
+str(new_popstars)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Exercise - data type and type conversion
+
+For our first short exercise, we will do some practice on working with and converting data types.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and start **Assignment 01 - R Fundamentals**.
+
+Let's work on **Exercises 1 and 2**.
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - named lists
+
+Named lists are the most flexible structures in R.  They can contain any other structures inside them.
+
+```{r}
+my_list <- list(
+  great_tv = c("Ozark", "Mad Men", "Breaking Bad"),
+  first_primes = first_primes,
+  popstars_factor = popstars_factor
+)
+
+str(my_list)
+
+# access specific elements
+my_list$great_tv
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - dataframes
+
+Dataframes are named lists of vectors of the same length.  They are the most popular data structure in R - basically the R equivalent of a spreadsheet.
+
+```{r}
+(popstars_info <- data.frame(
+  popstars = popstars_factor,
+  keith_likes = popstars_keith_likes
+))
+
+str(popstars_info)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Loading and viewing dataframes
+
+All of the data sets we work with will be in online CSV files, so we can load them in from a URL using `read.csv()`.  
+
+```{r}
+url <- "https://peopleanalytics-regression-book.org/data/ugtests.csv"
+ugtests <- read.csv(url)
+str(ugtests)
+```
+
+Often data is big, so we will use `head()` to look at the first few rows:
+
+```{r}
+head(ugtests)
+```
+
+
+---
+class: left, lec-logo, middle,  
+
+## Functions
+
+Functions perform useful operations on objects, returning a transformed object.  They usually exist because there is a task that needs to be performed repeatedly by a user or many users.  We've already seen some functions.
+
+Can you name some functions that we have already seen in previous pages?
+
+We will be using a lot of functions over the next 2 days.  Some of them will be built into base R, like `lm()` or `glm()`, and some will be from add-on packages like `polr()`.  
+
+```{r}
+# example function - substr() extracts characters from a string
+substr("Keith", start = 2, stop = 4)
+```
+
+To display help on how to use the `substr` function, use `?substr` or `help(substr)` in the console.
+
+---
+class: left, lec-logo, middle,  
+
+## Packages
+
+A set of functions that have been created for a specific purpose can be released as a package.  We will be using packages like `dplyr` and `MASS` during this workshop.  
+
+All packages have been pre-installed for you on Posit Cloud, but installing packages is easy.  For example `install.packages("MASS")` would install the `MASS` package. 
+
+To use the functions in a package, you should load the installed package from your library.  For example, to load `dplyr` you would use `library(dplyr)`.
+
+Sometimes it makes sense to namespace functions in packages so that they are not confused with similarly named functions in other packages.  For example, to use the `filter()` function in `dplyr`, you can namespace using `dplyr::filter()`.
+
+
+---
+class: left, lec-logo, middle,  
+
+## The pipe operator
+
+The pipe operator `|>`  helps you write more readable code through avoiding deeply nested functions within functions, allowing you to see the order of operations more clearly. (**Tip:** Use `Cmd/Ctrl+Shift+M` for a shortcut to the pipe).
+
+```{r}
+library(dplyr)
+
+# without pipe
+round(mean(dplyr::pull(dplyr::filter(ugtests, Yr2 < 75), Yr1)), 2)
+```
+
+```{r}
+# with pipe (note neat coding style)
+ugtests |> 
+  dplyr::filter(Yr2 < 75) |> 
+  dplyr::pull(Yr1) |> 
+  mean() |> 
+  round(2)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Exercise - Dataframes, functions, packages and the pipe operator
+
+For our next short exercise, we will do some practice on working with dataframes, functions, packages and the pipe operator.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and continue **Assignment 01 - R Fundamentals**.
+
+Let's work on **Exercises 3 and 4**.
+
+---
+class: left, lec-logo, middle,  
+
+## Plotting and graphing in base R
+
+Plotting is a big part of any analytical work.  R has a very wide range of options for this.  
+
+Base R has functions like `plot()` for simple X-Y plots, and `boxplot()` or `hist()` for specific plot types.
+
+```{r, out.height="300", fig.align = "center"}
+plot(ugtests$Yr1, ugtests$Final)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Plotting and graphing in `ggplot2`
+
+For those who know it, `ggplot2` is an incredibly powerful graphing package based on the Grammar of Graphics (Wilkinson, 2005).
+
+```{r, out.height = "300", fig.align = "center"}
+library(ggplot2)
+
+ggplot(ugtests, aes(x = Yr1, y = Final)) +
+  geom_point(color = "blue") + 
+  labs(x = "Year 1", y = "Final") + 
+  theme_minimal()
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Pairplots
+
+Pairplots are very useful summary plots to understand univariate and bivariate patterns in data, and are often a useful precursor to modeling efforts.  It's important for data types to be well defined for pairplots to work effectively.
+
+```{r, out.height = "300", fig.align = "center"}
+library(GGally)
+
+GGally::ggpairs(ugtests)
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Documenting work in Quarto
+
+Quarto allows you to integrate your work into a document with commentary, and is a great way to record the work you have done for future reference and reproducibility.
+
+The assignments in this workshop are all set up in Quarto documents.  When you have finished them you can render them into HTML documents which will remain available in your workspace after this workshop.  Feel free to add your own text commentary or notes to these documents to help remind you of important things. 
+
+I **always** use Quarto to record my method and code in one document.
+
+---
+class: left, lec-logo, middle,  
+
+## Exercise - Plotting and recording your work
+
+For our next short exercise, we will do some practice on plotting and on recording work in Quarto.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and continue **Assignment 01 - R Fundamentals**.
+
+Let's work on **Exercises 5 and 6**.
+
+---
+class: left, lec-logo, middle,  
+
+# &#x1F389; We are ready to start modeling! &#128588;
+

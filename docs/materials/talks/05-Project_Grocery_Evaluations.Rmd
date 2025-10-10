@@ -1,0 +1,55 @@
+---
+title: "Explanatory Statistical Modeling in R"
+subtitle:  "Take Home Project - Grocery Performance Evaluations"
+author: "Keith McNulty"
+output:
+  xaringan::moon_reader:
+    css: "style.css"
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+class: left, middle, lec-logo, bigfont
+
+## Context
+
+We have simulated some data related to recent performance evaluations of procurement staff at a US national grocery chain.  Our sample contains information on 341 procurement staff.  
+
+These staff work to procure from local suppliers for the various categories of goods sold by the grocery chain.  It is important that they procure goods that attract customers to their stores, and that they procure them from suppliers at competitive prices.
+
+Try to use the data provided to construct a model to explain some of the things that influence how procurement staff are evaluated.  Consider whether and how the variables influence the performance of the staff, and consider the extent to which this small set of variables contributes to an overall understanding of staff performance. 
+
+---
+class: left, middle, lec-logo, small
+
+# Data provided
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and start **Assignment 5 - Grocery Performance Evaluation Project**.
+
+In this assignment, you will find a file called `grocery_eval.csv` containing the following fields of data.
+
+* `name`:  The name of the procurement staff member
+* `relative_target`:  This is a financial calculation of the relative discount or premium the staff member achieved across their product category.  Negative numbers mean the staff member procured at a discount from the expected price, while positive numbers mean the staff member procured at a premium to the expected price.
+* `customer`:  The average satisfaction rating from a customer survey in the relevant stores of the staff member when asked about their satisfaction with the range of products in the staff member's assigned category.
+* `volume_segment`:  The size of the staff member's procurement volume in SKUs, expressed in terms of increasing quintiles set nationally.
+* `revenue_segment`:  The $ sales of the staff member's procurement volume, expressed in terms of increasing quintiles set nationally.
+* `performance`:  The performance rating of the staff member on an increasing scale from 1 to 5.
+
+
+---
+class: left, middle, lec-logo
+
+# How to proceed
+
+Start a Quarto file, and follow some of the methods you learned earlier to try to make progress on this project.    
+
+Try to explain your approach in the text of your Quarto document.  Imagine that other people will read your work and will need to understand what you are doing.  
+
+Don't forget to render your document when you have finished.

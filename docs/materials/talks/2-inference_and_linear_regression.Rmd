@@ -1,0 +1,718 @@
+---
+title: "Explanatory Statistical Modeling in R"
+subtitle:  "Statistical Inference and Linear Regression"
+author: "Keith McNulty"
+output:
+  xaringan::moon_reader:
+    css: "style.css"
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+class: left, middle, lec-logo, bigfont
+
+## Aims of this module
+
+&#9989; Understand the concept of statistical inference
+  - Briefly review some important statistical concepts
+  - Review an example of a statistical hypothesis test
+
+&#9989; Learn our first explanatory modeling method
+  - Review simple and multiple Linear Regression
+  - Learn some foundational concepts that apply to other model types
+
+---
+class: left, middle, lec-logo
+
+# Statistical Inference
+
+---
+class: left, middle, lec-logo
+
+## Samples and Populations
+
+In the vast majority of situations when we apply statistics to a problem, we are being asked to draw a conclusion about a *population*, but we only have data on a *sample* subset of that population.
+
+What might be the sample and what might be the population in each of these problems?
+
+1.  A political election forecast
+2.  A market research survey for a grocery chain
+3.  An employer trying to understand if compensation levels may be a factor in employee retention
+
+No matter what we see in a sample, we can never be 100% certain that we would see the same in the population, but sometimes we can be certain enough to *infer* that we will see the same in the population.  The mathematics behind this process is known as *statistical inference*. 
+
+---
+class: left, middle, lec-logo
+
+## Let's look at an example
+
+Let's take a dataset about charity donations. 
+
+```{r}
+# get data from a URL
+url <- "https://peopleanalytics-regression-book.org/data/charity_donation.csv" 
+charity_data <- read.csv(url)
+
+# look at the structure
+str(charity_data)
+```
+
+---
+class: left, middle, lec-logo
+
+## Let's view the data
+
+```{r}
+# view the data
+head(charity_data)
+```
+
+---
+class: left, middle, lec-logo
+
+## Let's take a sample
+
+Let's determine the mean age of ten randomly selected people who made donations.  Note that the age of a person is considered a *random variable*, in that each persons age is independently drawn from the same overall distribution.
+
+```{r}
+# select ages of ten people at random
+set.seed(123) # ensures we can reproduce
+random_ages <- sample(charity_data$age, 100)
+
+#take mean
+(mean_age <- mean(random_ages))
+
+```
+
+
+So can we conclude that people who donate to this charity have a mean age of `r mean_age`?
+
+
+---
+class: left, middle, lec-logo
+
+## Repeated sampling tells us about a pattern we can expect
+
+If we were to do this process 1000 times, and draw a density plot, this is what it would look like.  You can see the code for this in the source of this document.
+
+```{r, echo = FALSE, out.height = "350", out.extra='style="float:left; padding:10px"'}
+library(ggplot2)
+
+sample_means <- c()
+
+set.seed(123)
+for (i in 1:1000) {
+  sample_means[i] <- mean(sample(charity_data$age, 100))
+}
+
+
+ggplot() +
+  geom_density(aes(x = sample_means), fill = "pink", alpha = 0.3) +
+  geom_vline(xintercept = mean(sample_means), color = "blue") +
+  geom_vline(xintercept = mean(sample_means) + sd(sample_means), color = "red", linetype = "dashed") +
+  geom_vline(xintercept = mean(sample_means) - sd(sample_means), color = "red", linetype = "dashed") +
+  geom_vline(xintercept = mean(sample_means) - 1.96*sd(sample_means), color = "brown", linetype = "dashed") +
+  geom_vline(xintercept = mean(sample_means) + 1.96*sd(sample_means), color = "brown", linetype = "dashed") +
+  labs(x = "Sample Mean", y = "Density") +
+  annotate(geom = "text", x = 46.7, y = 0.29, label = "Mean", color = "blue") +
+  annotate(geom = "text", x = 45.4, y = 0.29, label = "-1 SE", color = "red") +
+  annotate(geom = "text", x = 44.0, y = 0.29, label = "-1.96 SE", color = "brown") +
+  annotate(geom = "text", x = 48.7, y = 0.29, label = "+1 SE", color = "red") +
+  annotate(geom = "text", x = 50.1, y = 0.29, label = "+1.96 SE", color = "brown") +
+  theme_minimal()
+```
+
+Our density plot shows the following properties:
+
+* Has the shape of a normal (Gaussian) distribution
+* Blue line as the mean value (the mean of the sample means) - most likely value for the population mean
+* Red dashed lines as +/- 1 standard deviations - 69% probability that population mean is in this range
+* Brown dashed lines as +/- 1.96 standard deviations - 95% probability that population mean is in this range
+
+---
+class: left, middle, lec-logo
+
+## This observation leads to some important concepts
+
+1.  The expected mean over many samples of a random variable is itself a random variable, with a mean value and a distribution around that mean.
+2.  Given this distribution, we call a standard deviation above or below the expected mean of a random variable a *standard error (SE)* for the population mean
+3.  We call a probability range around the expected mean of a random variable a *confidence interval* for the population mean.  This confidence interval corresponds to specified multiples of standard errors.
+
+As a consequence of this, if we know the mean of our sample, we can use the expected distribution of that mean to determine the standard error and the confidence interval.  
+
+Often as a 'rule of thumb', practitioners will regard +/- 2 standard errors as the 95% confidence interval.
+
+
+---
+class: left, middle, lec-logo
+
+## Hypothesis testing
+
+Now imagine someone asks us a question about differences between populations.  For example:  do men and women that donate to our charity have a different average age?
+
+We do not have the data for all men and women that donate, but we do have the data from our sample dataset. Let's calculate the mean age of men and of women in that data set.
+
+```{r}
+age_m <- charity_data$age[charity_data$gender == "M"]
+mean(age_m)
+```
+
+```{r}
+age_f <- charity_data$age[charity_data$gender == "F"]
+mean(age_f)
+```
+
+So in our sample there is an age difference of about 0.9 years on average.  We now need to determine if that age difference is large enough to infer that there is a difference in the average age of all men who donate vs all women who donate.
+
+
+---
+class: left, middle, lec-logo
+
+## Process of statistically testing a hypothesis of difference
+
+First we note that the difference of two random variables is a random variable, so in this case we can expect the difference between the mean age of men and the mean age of women to obey an expected sampling distribution with a standard error and a 95% confidence interval for the population value.
+
+So we can use the following process to test our whether we can infer that there is a difference:
+
+* Assume as a starting point that the difference in the population is actually zero.  This is called the *null hypothesis*. 
+* Use the sample to calculate the expected mean, standard error and 95% confidence interval for the difference between the mean ages in the population.
+* Determine whether or not zero lies inside or outside the 95% confidence interval.  If it lies outside, this means that there is less than a 5% chance that this sample would occur if the null hypothesis were true.
+* If there is less than a 5% chance that this sample would occur if the null hypothesis were true, we infer that the null hypothesis should be rejected and we conclude the *alternative hypothesis*.
+* Otherwise we do not infer that the null hypothesis can be rejected.
+
+
+
+
+
+---
+class: left, middle, lec-logo
+
+## Welch's $t$-test of difference in means
+
+Welch's $t$-test will perform all of these steps for you.  It will calculate the expected distribution of the difference in means based on your samples, it will compute the 95% confidence interval, and it will tell you where zero lies on the distribution.  In this case it tells us that we cannot infer a rejection of the null hypothesis.
+
+```{r}
+t.test(age_m, age_f)
+```
+
+---
+class: left, middle, lec-logo
+
+## $\alpha$ and the $p$-value
+
+The $p$-value returned by a hypothesis test represents the likelihood of seeing this sample difference or a larger difference if the null hypothesis were true.   
+
+```{r, echo = FALSE, out.height = "350", out.extra='style="float:left; padding:10px"'}
+diff <- mean(age_m) - mean(age_f)
+test <- t.test(age_m, age_f)
+lower <- test$conf.int[1]
+upper <- test$conf.int[2]
+tval <- test$statistic
+df <- test$parameter
+se <- test$stderr
+breaks <- -2:2
+labels <- round(diff + se*breaks, 2)
+
+ggplot(data.frame(x = c(-2.5, 2.5)), aes(x = x)) +
+  stat_function(fun = dt, args = list(df = df), color = "blue") +
+  scale_x_continuous(breaks = breaks,
+                     labels = labels) +
+  geom_vline(xintercept = tval, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = -tval, linetype = "dashed", color = "red") +
+  annotate(geom = "text", x = 1.2, y = 0.4, 
+           label = "Mean M - Mean F = 0", color = "red") +
+  annotate(geom = "text", x = -1.2, y = 0.4, 
+           label = "Mean F - Mean M = 0", color = "red") +
+  annotate(geom = "text", x = -1, y = 0.1, label = "A", size = 10) +
+  annotate(geom = "text", x = 0, y = 0.1, label = "B", size = 10) +
+  annotate(geom = "text", x = 1, y = 0.1, label = "C", size = 10) +
+  labs(x = "Estimated population diff",
+       y = "Density") +
+  theme_minimal()
+```
+
+* The red dashed lines represent the points at which the difference is zero (first line is F - M, second line is M - F)
+* This splits the density curve into 3 segments.
+* The total area of A + C represents the $p$-value - it is the likelihood that samples with this difference or a larger difference would occur assuming there was a zero difference in the population.
+* If this $p$-value is less than a specified standard known as $\alpha$, we can infer a rejection of the null hypothesis.  Usually $\alpha = 0.05$.  
+
+---
+class: left, middle, lec-logo
+
+## Exercise - Hypothesis testing for a difference in means
+
+For our next short exercise, we will do some practice on running a hypothesis test for a difference in means.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and start **Assignment 02A - Statistical Inference**.
+
+Let's work on **Exercises 1 and 2**.
+
+
+---
+class: left, middle, lec-logo
+
+## Using regression models for statistical inference
+
+Using similar principles to the simple hypothesis test we have just seen, we use regression modeling techniques on samples in order to make inferences about populations.  In most modeling scenarios we will have the following at the outset:
+
+1.  A sample $S$ of observations taken from a population $P$
+2.  A dataset containing data for our sample set $S$.  The data includes a set of input variables $x_1, x_2, ..., x_p$ and an outcome variable $y$.
+3.  A model type to relate $x_1, x_2, ..., x_p$ to $y$.  We select this model type for the most part based on the scale of our outcome data $y$.
+
+We will use our sample dataset to estimate the parameters for the model type we have selected, and we will use these parameters to make inferences about the following:
+
+1.  Which input variables influence the outcome for the population?
+2.  To what degree does each input variable influence the outcome?
+3.  How much of the outcome is explained by all our input variables?
+
+---
+class: left, middle, lec-logo
+
+## Choosing your model type
+
+Regression model types are usually chosen based on the scale of the outcome variable $y$.  
+
+```{r, echo = FALSE}
+library(kableExtra)
+
+d <- data.frame(
+  Outcome = c(
+    "Continuous scale (eg money, height, weight)",
+    "Binary scale (Yes/No)",
+    "Nominal category scale (eg A, B, C)",
+    "Ordinal category scale (eg Low, Medium, High)",
+    "Time dependent binary scale"
+  ),
+Model = c(
+  "Linear regression",
+  "Binomial logistic regression",
+  "Multinomial logistic regression",
+  "Ordinal logistic regression",
+  "Survival/proportional hazard regression"
+  )
+)
+
+kbl(d) |> 
+  kable_minimal() |> 
+  row_spec(1, background = "lightblue")
+```
+
+
+---
+class: left, middle, lec-logo
+
+# Linear regression modeling
+
+---
+class: left, middle, lec-logo
+
+## Equation of a straight line
+
+*Linear regression* assumes that the mean of the outcome variable $y$ over many observations has a straight line relationship with the input variables $x_1, x_2, ..., x_p$.
+
+You may remember the equation of a straight line from high school:
+
+$$
+y = mx + c
+$$
+
+where $m$ is the gradient of the line and $c$ is the $y$-intercept.
+
+```{r, echo = FALSE, out.height = "300", out.width = "300", fig.align = "center"}
+ggplot() +
+  xlim(-1, 4) +
+  ylim(-1, 4) +
+  geom_function(fun = function(x) x + 1, color = "blue") +
+  annotate(geom = "text", x = 3.5, y = 4, label = "y = x + 1",
+           color = "blue", size = 6) +
+  geom_segment(aes(x = 2, xend = 2, y = 2, yend = 3), color = "red",
+               linetype = "dotted", size = 1) +
+  geom_segment(aes(x = 1, xend = 2, y = 2, yend = 2), color = "red",
+             linetype = "dotted", size = 1) +
+  geom_segment(aes(x = 1, xend = 2, y = 2, yend = 2), color = "red",
+           linetype = "dotted", size = 1) +
+  geom_segment(aes(x = 2.5, xend = 2, y = 1.5, yend = 2.5), 
+               arrow = arrow(length = unit(0.15, "inches")), size = 0.5) +
+  geom_segment(aes(x = 2.5, xend = 1.5, y = 1.5, yend = 2), 
+               arrow = arrow(length = unit(0.15, "inches")), size = 0.5) +
+  geom_segment(aes(x = 0.5, xend = 0, y = 0.5, yend = 1), 
+               arrow = arrow(length = unit(0.15, "inches")), size = 0.5) +
+  annotate(geom = "text", x = 2.75, y = 1.25, label = "m = 1",
+           size = 6) +
+  annotate(geom = "text", x = 0.75, y = 0.25, label = "c = 1",
+           size = 6) +
+  geom_point(aes(x = 0, y = 1), color = "red", size = 4) +
+  theme_minimal()
+
+```
+
+---
+class: left, middle, lec-logo
+
+## Simple linear regression
+
+*Simple linear regression* refers to the case where there is only one input variable and only one outcome variable.  This is an easy technique to visualize.  Given a set of data, we plot the $x$ and $y$ values, and then we find the *line of best fit*.
+
+Let's imagine doing this for fifty observations of the examination scores of some students on a four year progam, with our input variable $x$ being their score in Year 3 (out of a total of 200) and our outcome variable $y$ being their Final year score (out of a total of 300).
+
+
+```{r, echo = FALSE, out.height = "300", out.width = "300", fig.align = "center", out.extra='style="float:left; padding:10px"'}
+ugtests <- read.csv("https://peopleanalytics-regression-book.org/data/ugtests.csv")
+
+set.seed(42)
+data <- ugtests[sample(1:nrow(ugtests), 50), ]
+
+model <- lm(Final ~ Yr3, data = data)
+
+ggplot(data = data, aes(x = Yr3, y = Final)) +
+  xlim(-20, 200) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  annotate(geom = "text", x = 180, y = 150, 
+          label = paste("m =", round(model$coefficients["Yr3"], 2)),
+          color = "blue") +
+  geom_point(aes(x = 0, y = model$coefficients["(Intercept)"]), color = "red") +
+  annotate(geom = "text", x = -15, y = model$coefficients["(Intercept)"], 
+        label = paste("c =", round(model$coefficients["(Intercept)"], 2)),
+        color = "red") +
+  theme_minimal()
+
+
+
+
+```
+The line of best fit for this sample has a gradient of `r round(model$coefficients['Yr3'], 2)` and an intercept of `r round(model$coefficients['(Intercept)'], 2)`.  Therefore, using our sample to model for the relationship between Year 3 and Final year test scores, we can conclude:
+
+* Students who scored zero in Year 3  will score `r round(model$coefficients['(Intercept)'], 2)` in their final year on average.
+* Every point scored in Year 3 is associated with `r round(model$coefficients['Yr3'], 2)` points scored in the final year on average.
+
+---
+class: left, middle, lec-logo
+
+## Inferring from the sample to the population
+
+Now we want to infer this relationship from our sample to all students (past, present and future).  As we learned earlier in this module, there will be uncertainty about what the gradient and the intercept will be for the population, so our line of best fit will have a 95% confidence interval for the intercept and for the gradient.
+
+```{r, echo = FALSE, out.height = "300", out.width = "300", fig.align = "center", out.extra='style="float:left; padding:10px"'}
+ugtests <- read.csv("https://peopleanalytics-regression-book.org/data/ugtests.csv")
+
+set.seed(42)
+data <- ugtests[sample(1:nrow(ugtests), 50), ]
+
+model <- lm(Final ~ Yr3, data = data)
+
+ggplot(data = data, aes(x = Yr3, y = Final)) +
+  xlim(-40, 200) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  geom_segment(aes(x = 0, xend = 0, y = confint(model)["(Intercept)", "2.5 %"],
+                   yend = confint(model)["(Intercept)", "97.5 %"]),
+               color = "red") +
+  annotate(geom = "text", x = -25, y = model$coefficients["(Intercept)"], 
+        label = paste("95% CI Intercept"),
+        color = "red") +
+  annotate(geom = "text", x = 150, y = 50, 
+        label = "95% CI gradient") +
+  geom_segment(aes(x = 150, xend = 150, y = 50, yend = 155),
+               arrow = arrow(length = unit(0.15, "inches")), size = 0.5) +
+  theme_minimal()
+
+
+
+
+```
+
+Therefore, we can infer the following for all students (past, present and future) with 95% confidence:
+
+* Students who score zero in Year 3 will score between `r round(confint(model)["(Intercept)", "2.5 %"], 2)` and `r round(confint(model)["(Intercept)", "97.5 %"], 2)` on average in their final year.
+* Every point scored in Year 3 is associated with between `r round(confint(model)["Yr3", "2.5 %"], 2)` and `r round(confint(model)["Yr3", "97.5 %"], 2)` points on average in the final year.
+
+---
+class: left, middle, lec-logo
+
+## Estimating the line of best fit in R
+
+Let's estimate our model using the full set of sample data instead of just 50 data points.  
+
+In general, to estimate any model in R, you need (at a minimum) a model function, some data and a formula.  In this case: 
+
+* Model is linear model - `lm()` function in R
+* Data is `ugtests`
+* Formula takes the form `Outcome ~ Input`, in this case `Final ~ Yr3` for a simple regression
+
+```{r}
+# get data 
+url <- "https://peopleanalytics-regression-book.org/data/ugtests.csv"
+ugtests <- read.csv(url)
+
+# estimate model and save model object
+model <- lm(data = ugtests, formula = Final ~ Yr3)
+```
+
+---
+class: left, middle, lec-logo
+
+## Interpreting the coefficients
+
+The intercept and gradient are collectively known as the *coefficients* of the model.  The model output in R is a named list with many components, one of which contains the estimates of the coefficients.
+
+```{r}
+model$coefficients
+```
+
+We can be 95% certain that the gradient is non-zero if the confidence interval for `Yr3` does not contain zero.  You can use the `confint()` function on your model to view this:
+
+```{r}
+confint(model)
+```
+
+We can say that there is a *statistically significant* association between Year 3 scores and final year scores.  We can use the estimated coefficient to illustrate the extent to which Year 3 scores influence final year scores. For example, *each point scored in Year 3 is associated with approximately `r round(model$coefficients["Yr3"], 2)` points in the final year*.
+
+
+---
+class: left, middle, lec-logo
+
+## Exercise - Simple linear regression
+
+For our next short exercise, we will do some practice on running a simple linear regression model and interpreting the coefficients.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and start **Assignment 02B - Linear regression**.
+
+Let's work on **Exercises 1 and 2**.
+
+---
+class: left, middle, lec-logo
+
+## Multiple regression
+
+*Multiple regression* refers to a situation when an outcome is being modeled against more than one input variable.  Each input variable has its own gradient coefficient which helps determine the influence that input variable has on the outcome.
+
+For multiple linear regression, we assume:
+
+$$
+y = \alpha + \beta_1x_1 + \beta_2x_2 + ... + \beta_px_p
+$$
+where $\alpha$ is the intercept and each $\beta_k$ is the coefficient for input variable $x_k$.
+
+$\beta_k$ represents the change in $y$ associated with a unit increase in $x_k$ **assuming no change in the other input variables**.
+
+---
+class: left, middle, lec-logo
+
+## Running a multiple linear regression model
+
+Let's relate our final year examination score to all previous years.  We simply extend our formula using the `+` symbol to include multiple input variables.  
+
+```{r}
+full_model <- lm(data = ugtests, formula = Final ~ Yr1 + Yr2 + Yr3)
+
+full_model$coefficients
+
+confint(full_model)
+```
+
+---
+class: left, middle, lec-logo
+
+## Interpreting a multiple regression model
+
+The key thing to remember is that every coefficient estimate assumes no change in the value of the other input variables.  
+
+* Individuals with zero in all three previous years can expect a score of between `r confint(full_model)["(Intercept)", "2.5 %"] |> round(2)` and `r confint(full_model)["(Intercept)", "97.5 %"] |> round(2)` on average in the final year
+* For individuals with the same scores in Years 1 and 2, an additional point in Year 3 is associated with between `r confint(full_model)["Yr3", "2.5 %"] |> round(2)` and `r confint(full_model)["Yr3", "97.5 %"] |> round(2)` additional points on average in the final year
+* For individuals with the same scores in Years 1 and 3, an additional point in Year 2 is associated with between `r confint(full_model)["Yr2", "2.5 %"] |> round(2)` and `r confint(full_model)["Yr2", "97.5 %"] |> round(2)` additional points on average in the final year
+* For individuals with the same scores in Years 2 and 3, there is no significant association of Year 1 score with final year score on average
+
+---
+class: left, middle, lec-logo
+
+## Using categorical input variables
+
+If an input variable is categorical, you need to check that it has the right data type or the model will not understand it.  
+
+```{r}
+url <- "https://peopleanalytics-regression-book.org/data/sociological_data.csv"
+socio_data <- read.csv(url)
+str(socio_data)
+```
+
+If we want to use `region`, `job_type` or `gender` as input variables, we need to change them into factors.  You can do this using `as.factor()`, but many modeling function in R will automatically determine if character string columns should be considered to be categorical, and will automatically convert the data type for you.
+
+---
+class: left, middle, lec-logo
+
+## Interpreting categorical input variables
+
+Your model will assume a reference (default) category and then it will estimate the influence that a change to one of the other categories will have on the outcome variable.
+
+```{r}
+# model with a categorical and a numerical input
+socio_model <- lm(annual_income_ppp ~ education_months + gender, 
+                  socio_data)
+socio_model$coefficients
+```
+
+If you wish you can relevel the variable to control which value to use as reference.
+
+```{r}
+# relevel gender to use M as the reference
+socio_data$gender <- as.factor(socio_data$gender) |> 
+  relevel(ref = "M")
+
+# rerun model
+socio_model <- lm(annual_income_ppp ~ education_months + gender, 
+                  socio_data)
+socio_model$coefficients
+```
+
+
+---
+class: left, middle, lec-logo
+
+## Model summary
+
+Most regression models in R have a `summary()` function.
+
+```{r}
+# summary of student test score model
+summary(full_model)
+```
+
+
+
+---
+class: left, middle, lec-logo
+
+## Understanding model fit
+
+It's never the case in people analytics that an outcome variable can be fully explained by a set of input variables, so it is of interest to understand *how much* of it is explained by the input variables we are using.  This gives us a sense of how well we have explained our outcome.
+
+The $R^2$ of a linear regression model represents the proportion of the variance of the outcome variable that is explained by the input variables.  It takes a value between 0 (a 'null' model where the input variables have no explanatory power) and 1 (a perfect fit).  
+
+The R-squared is part of the summary function for linear models.
+
+```{r}
+summary(full_model)$r.squared
+```
+
+---
+class: left, middle, lec-logo
+
+## Is your model 'better than nothing'?
+
+Depending on the fit and the sample size, its possible that your model is not significantly different from a 'null model'.  
+
+A model with a high $R^2$ on a handful of observations might actually be useless.  Conversely, a model with a low $R^2$ on a large data set might be better than nothing.  The *F-statistic* helps determine the likelihood that your model is better than a null model.  
+
+The $p$-value of the F-statistic tests the hypothesis that the model is no different from a null model.  You can see the results of this hypothesis test at the end of the model summary.
+
+---
+class: left, middle, lec-logo
+
+## Model simplification
+
+If an input variable is not considered significant in your model, it can be removed without a significant loss in fit.  It is always advisable to remove non-significant variables from models in order to have a simpler model.  This is known as *model parsimony*.
+
+```{r}
+simpler_model <- lm(Final ~ Yr3 + Yr2, ugtests)
+
+summary(full_model)$r.squared
+summary(simpler_model)$r.squared
+```
+
+---
+class: left, middle, lec-logo
+
+## Assumption of normality of residuals
+
+Remember that our linear relationship represents the expected mean outcome over many observations of the input variables.  
+
+Individual observations will not precisely match this expected outcome, and so each observation is expected to have some error.  
+
+$$
+\begin{equation}
+y_i = \alpha + \beta_1x_{1i} + ... + \beta_px_{pi} + \epsilon_i
+\end{equation}
+$$
+
+These errors $\epsilon_i$ are known as **residuals**. 
+
+Linear regression assumes that **residuals are normally distributed with a mean of zero**.  This is a necessary assumption for the mathematics of the model to work.  If your data does not have 'normal-looking' residuals, linear regression may not be the best model to use.
+
+---
+class: left, middle, lec-logo
+
+## Assumption of normality of residuals (Visual representation)
+
+<center>
+```{r, echo = FALSE, out.height = 400, out.extra='style="float:left; padding:10px"'}
+library(peopleanalyticsdata)
+library(plotly)
+library(MASS)
+
+yr3.seq <- seq(50, 150, by = 10)
+
+test <- data.frame(
+  Yr3 = yr3.seq
+)
+
+model <- lm(Final ~ Yr3, ugtests)
+
+test$meanFinal <- predict(model, test)
+
+test_density <- test |> 
+  dplyr::group_by(Yr3) |> 
+  dplyr::mutate(
+    Value = list(rnorm(1000, mean = meanFinal, sd = summary(model)$sigma))
+  ) |> 
+  tidyr::unnest(Value)
+
+
+den3d <- kde2d(test_density$Yr3, test_density$Value)
+
+plot_ly(x=den3d$x, y=den3d$y, z=den3d$z) |> 
+  add_surface(showscale = FALSE) |> 
+  layout(scene = list(
+    xaxis = list(title = 'Year 3'), 
+    yaxis = list(title = 'Final'),
+    zaxis = list(title = 'Density', showticklabels = FALSE)
+  ))
+
+
+```
+</center>
+
+---
+class: left, middle, lec-logo
+
+## Other key watchouts
+
+The following complicating factors can render the results of a linear regression model untrustworthy.  It is advisable to check for these before interpreting your model:
+
+1.  **Collinearity - Highly correlated input variables**:  These can result in inaccurate inferences about the importance of input variables.  Correlations of over 0.7 should set off serious alarm bells.  It is best to experiment with models that do not include both variables.
+2.  **Non-linear relationships**:  If the relationship is clearly non-linear, then applying linear regression may be inappropriate and may result in an over simplified model with a poor fit.  This is called *underfitting*.  Analysis of model error terms (*residuals*) can quickly spot if a linear model is inappropriate.
+3.  **Unusual observations**: Extreme observations can impact model estimates.  Extreme outcome values are known as *outliers* while extreme input variable values are known as *high leverage points*.  It is advisable to remove these if there are reasons to believe that data quality issues could be at play.   
+
+
+---
+class: left, middle, lec-logo
+
+## Exercise - Multiple linear regression
+
+For our next short exercise, we will do some practice on running and interpreting a multiple linear regressio model.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and start **Assignment 02B - Linear regression**.
+
+Let's work on **Exercises 3, 4 and 5**.
+
+---
+class: left, middle, lec-logo
+
+# ☕ Let's take a break!  &#128523; 

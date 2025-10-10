@@ -1,0 +1,81 @@
+---
+title: "2A - Statistical Inference"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this document we will briefly practice some foundational concepts of 
+statistical inference and hypothesis testing.  Follow the instructions 
+in the comments of each code chunk.
+
+## Exercise 1 - Running a $t$-test
+
+```{r}
+# Download the charity donation dataset from the URL provided
+url <- "https://peopleanalytics-regression-book.org/data/charity_donation.csv"
+
+
+```
+
+```{r}
+# Create two vectors capturing the total donations for those who have 
+# recently donated and those who have not
+
+
+
+```
+
+```{r}
+# Calculate the difference in the means of these two vectors
+# Round this to 2 decimal places.
+
+
+
+```
+
+```{r}
+# Test the hypothesis that recent donors have a different mean donation amount. 
+# Ensure that your test is saved as an object with a name of your choice.
+
+
+
+```
+
+```{r}
+# EXTENSION:  Test the hypothesis that recent donors donate MORE
+# (Hint: seek help on the t.test function to work out how to do this)
+
+
+
+```
+
+## Exercise 2 - Interpreting a $t$-test
+
+```{r}
+# The results of a t-test are actually a named list.
+# You can access specific elements of the list using $ (eg my_test$p.value)
+# Return the standard error value for the difference in mean total donations. 
+# Round this to 2 decimal places
+
+
+
+```
+
+```{r}
+# Return the p-value and the 95% confidence interval for the population diff.
+# round these to 2 decimal places 
+
+
+
+
+```
+
+Use these values to write an interpretation of your $t$-test, explaining what you have observed in the sample and what this means you can infer about the population.
+
+
+
+
+

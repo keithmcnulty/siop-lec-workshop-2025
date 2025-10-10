@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Explanatory Statistical Modeling in R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Keith McNulty" />
+    <script src="1-preliminaries_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Explanatory Statistical Modeling in R
+]
+.subtitle[
+## Introduction and R Fundamentals
+]
+.author[
+### Keith McNulty
+]
+
+---
+
+
+
+
+
+class: left, middle, lec-logo, bigfont
+
+## Good morning and welcome!
+
+What I hope you can say at the end of this workshop: 
+
+&amp;#129489;&amp;#8205;&amp;#127891; You've learned a lot about some important methods for your work  
+&amp;#127881; You've had fun  
+&amp;#128075; You've met a few interesting people who work on similar things to you
+
+
+---
+class: left, lec-logo, middle,  
+
+# About this workshop
+
+---
+class: left, lec-logo, middle,  
+
+## Introducing ourselves
+
+Let's find out:
+
+1.  Who you are
+2.  Where you are from
+3.  What you do
+4.  What you hope to get from this morning's sessions
+
+---
+class: left, lec-logo, middle,  
+
+## Explanatory modeling: what is it?
+
+Explanatory modeling uses a sample of data to draw inferences about the potential causes of an outcome of interest.  It is also sometimes called *inferential modeling*.
+
+&lt;b&gt;Examples:&lt;/b&gt;  
+
+* Does working schedule and/or pay rate influence likelihood to leave an organization?
+* Does academic performance in earlier years of a program influence academic performance in the final year?
+* Do certain demographic factors influence choice of career?
+
+---
+class: left, lec-logo, middle,  
+
+## Explanatory modeling: what we will learn
+
+We will focus on regression analysis as a way to &lt;i&gt;explain&lt;/i&gt; outcomes of interest using data.  You will learn:
+
+1.  How to choose an appropriate model type for the problem at hand.
+2.  How to prepare your data for your model.
+3.  How to execute the model.
+4.  How to view a variety of outputs from the model.
+5.  How to interpret those outputs against the problem at hand.
+
+
+---
+class: left, middle, lec-logo, reallybigfont 
+
+## How we will learn
+
+&amp;#128105;&amp;#8205;&amp;#127979;  Talks and instruction
+
+&amp;#128104;&amp;#127997;&amp;#8205;&amp;#128187; Frequent short coding exercises 
+
+&amp;#129337; A small project to take away with you 
+
+&amp;#128562; A few other things
+
+---
+class: left, middle, lec-logo, middle 
+
+## Don't panic 🤯
+
+We are limited on time today - I'll likely have to skim over some things.
+
+An in-depth treatment of everything we do today (and more!) can always be found in the free online version of my textbook [Handbook of Regression Modeling in People Analytics](https://peopleanalytics-regression-book.org/).
+
+After you leave our session, use this as a reference text for everything we do today.
+
+
+
+---
+class: left, lec-logo, middle,  
+
+# Foundations:  Working with people data in R
+
+
+---
+class: left, lec-logo, middle,  
+
+## Data types - numeric
+
+
+``` r
+# numeric double
+my_double &lt;- 42.3
+
+# use typeof() to find out the data type of a scalar value
+typeof(my_double)
+```
+
+```
+## [1] "double"
+```
+
+
+``` r
+# numeric integer
+my_integer &lt;- 42L
+typeof(my_integer)
+```
+
+```
+## [1] "integer"
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data types - character and logical
+
+
+``` r
+# character is any string in quotes
+my_name &lt;- "Keith"
+typeof(my_name)
+```
+
+```
+## [1] "character"
+```
+
+
+``` r
+# logical is TRUE or FALSE
+at_siop_lec &lt;- TRUE
+typeof(at_siop_lec)
+```
+
+```
+## [1] "logical"
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - numeric, character and logical vectors
+
+
+``` r
+# vectors are 1-dimensional homogeneous structures (same data type)
+first_primes &lt;- c(2, 3, 5, 7, 11)
+
+# use str() to get info about data structures
+str(first_primes)
+```
+
+```
+##  num [1:5] 2 3 5 7 11
+```
+
+
+``` r
+# character vector
+popstars &lt;- c("Katy Perry", "Taylor Swift", "Harry Styles", "Charli XCX")
+str(popstars)
+```
+
+```
+##  chr [1:4] "Katy Perry" "Taylor Swift" "Harry Styles" "Charli XCX"
+```
+
+
+``` r
+# logical vector
+popstars_keith_likes &lt;- c(FALSE, FALSE, FALSE, TRUE)
+str(popstars_keith_likes)
+```
+
+```
+##  logi [1:4] FALSE FALSE FALSE TRUE
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - categorical (factor) vectors
+
+
+``` r
+# categorical or factor vectors store a limited set of categorical values
+popstars_factor &lt;- as.factor(popstars)
+str(popstars_factor)
+```
+
+```
+##  Factor w/ 4 levels "Charli XCX","Harry Styles",..: 3 4 2 1
+```
+
+
+``` r
+# if the categories have order, you can specify the order
+performance &lt;- c("Low", "High", "Medium", "High", "Low")
+ordered_performance &lt;- ordered(
+  performance, 
+  levels = c("Low", "Medium", "High")
+)
+str(ordered_performance)
+```
+
+```
+##  Ord.factor w/ 3 levels "Low"&lt;"Medium"&lt;..: 1 3 2 3 1
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - type coercion
+
+
+``` r
+# what happens if we try to put heterogeneous data in a vector
+mixed_types_1 &lt;- c(6.75, "Keith")
+str(mixed_types_1)
+```
+
+```
+##  chr [1:2] "6.75" "Keith"
+```
+
+
+``` r
+# some form of type coercion occurs
+mixed_types_2 &lt;- c(TRUE, 6.3)
+str(mixed_types_2)
+```
+
+```
+##  num [1:2] 1 6.3
+```
+
+
+``` r
+# if you add an unknown element to a defined factor vector
+new_popstars &lt;- c(popstars_factor, "Lady Gaga")
+str(new_popstars)
+```
+
+```
+##  chr [1:5] "3" "4" "2" "1" "Lady Gaga"
+```
+
+
+``` r
+# use type conversion functions to control coercion
+new_popstars &lt;- c(as.character(popstars_factor), "Lady Gaga")
+str(new_popstars)
+```
+
+```
+##  chr [1:5] "Katy Perry" "Taylor Swift" "Harry Styles" "Charli XCX" ...
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Exercise - data type and type conversion
+
+For our first short exercise, we will do some practice on working with and converting data types.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and start **Assignment 01 - R Fundamentals**.
+
+Let's work on **Exercises 1 and 2**.
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - named lists
+
+Named lists are the most flexible structures in R.  They can contain any other structures inside them.
+
+
+``` r
+my_list &lt;- list(
+  great_tv = c("Ozark", "Mad Men", "Breaking Bad"),
+  first_primes = first_primes,
+  popstars_factor = popstars_factor
+)
+
+str(my_list)
+```
+
+```
+## List of 3
+##  $ great_tv       : chr [1:3] "Ozark" "Mad Men" "Breaking Bad"
+##  $ first_primes   : num [1:5] 2 3 5 7 11
+##  $ popstars_factor: Factor w/ 4 levels "Charli XCX","Harry Styles",..: 3 4 2 1
+```
+
+``` r
+# access specific elements
+my_list$great_tv
+```
+
+```
+## [1] "Ozark"        "Mad Men"      "Breaking Bad"
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Data structures - dataframes
+
+Dataframes are named lists of vectors of the same length.  They are the most popular data structure in R - basically the R equivalent of a spreadsheet.
+
+
+``` r
+(popstars_info &lt;- data.frame(
+  popstars = popstars_factor,
+  keith_likes = popstars_keith_likes
+))
+```
+
+```
+##       popstars keith_likes
+## 1   Katy Perry       FALSE
+## 2 Taylor Swift       FALSE
+## 3 Harry Styles       FALSE
+## 4   Charli XCX        TRUE
+```
+
+``` r
+str(popstars_info)
+```
+
+```
+## 'data.frame':	4 obs. of  2 variables:
+##  $ popstars   : Factor w/ 4 levels "Charli XCX","Harry Styles",..: 3 4 2 1
+##  $ keith_likes: logi  FALSE FALSE FALSE TRUE
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Loading and viewing dataframes
+
+All of the data sets we work with will be in online CSV files, so we can load them in from a URL using `read.csv()`.  
+
+
+``` r
+url &lt;- "https://peopleanalytics-regression-book.org/data/ugtests.csv"
+ugtests &lt;- read.csv(url)
+str(ugtests)
+```
+
+```
+## 'data.frame':	975 obs. of  4 variables:
+##  $ Yr1  : int  27 70 27 26 46 86 40 60 49 80 ...
+##  $ Yr2  : int  50 104 36 75 77 122 100 92 98 127 ...
+##  $ Yr3  : int  52 126 148 115 75 119 125 78 119 67 ...
+##  $ Final: int  93 207 175 125 114 159 153 84 147 80 ...
+```
+
+Often data is big, so we will use `head()` to look at the first few rows:
+
+
+``` r
+head(ugtests)
+```
+
+```
+##   Yr1 Yr2 Yr3 Final
+## 1  27  50  52    93
+## 2  70 104 126   207
+## 3  27  36 148   175
+## 4  26  75 115   125
+## 5  46  77  75   114
+## 6  86 122 119   159
+```
+
+
+---
+class: left, lec-logo, middle,  
+
+## Functions
+
+Functions perform useful operations on objects, returning a transformed object.  They usually exist because there is a task that needs to be performed repeatedly by a user or many users.  We've already seen some functions.
+
+Can you name some functions that we have already seen in previous pages?
+
+We will be using a lot of functions over the next 2 days.  Some of them will be built into base R, like `lm()` or `glm()`, and some will be from add-on packages like `polr()`.  
+
+
+``` r
+# example function - substr() extracts characters from a string
+substr("Keith", start = 2, stop = 4)
+```
+
+```
+## [1] "eit"
+```
+
+To display help on how to use the `substr` function, use `?substr` or `help(substr)` in the console.
+
+---
+class: left, lec-logo, middle,  
+
+## Packages
+
+A set of functions that have been created for a specific purpose can be released as a package.  We will be using packages like `dplyr` and `MASS` during this workshop.  
+
+All packages have been pre-installed for you on Posit Cloud, but installing packages is easy.  For example `install.packages("MASS")` would install the `MASS` package. 
+
+To use the functions in a package, you should load the installed package from your library.  For example, to load `dplyr` you would use `library(dplyr)`.
+
+Sometimes it makes sense to namespace functions in packages so that they are not confused with similarly named functions in other packages.  For example, to use the `filter()` function in `dplyr`, you can namespace using `dplyr::filter()`.
+
+
+---
+class: left, lec-logo, middle,  
+
+## The pipe operator
+
+The pipe operator `|&gt;`  helps you write more readable code through avoiding deeply nested functions within functions, allowing you to see the order of operations more clearly. (**Tip:** Use `Cmd/Ctrl+Shift+M` for a shortcut to the pipe).
+
+
+``` r
+library(dplyr)
+
+# without pipe
+round(mean(dplyr::pull(dplyr::filter(ugtests, Yr2 &lt; 75), Yr1)), 2)
+```
+
+```
+## [1] 51.75
+```
+
+
+``` r
+# with pipe (note neat coding style)
+ugtests |&gt; 
+  dplyr::filter(Yr2 &lt; 75) |&gt; 
+  dplyr::pull(Yr1) |&gt; 
+  mean() |&gt; 
+  round(2)
+```
+
+```
+## [1] 51.75
+```
+
+---
+class: left, lec-logo, middle,  
+
+## Exercise - Dataframes, functions, packages and the pipe operator
+
+For our next short exercise, we will do some practice on working with dataframes, functions, packages and the pipe operator.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and continue **Assignment 01 - R Fundamentals**.
+
+Let's work on **Exercises 3 and 4**.
+
+---
+class: left, lec-logo, middle,  
+
+## Plotting and graphing in base R
+
+Plotting is a big part of any analytical work.  R has a very wide range of options for this.  
+
+Base R has functions like `plot()` for simple X-Y plots, and `boxplot()` or `hist()` for specific plot types.
+
+
+``` r
+plot(ugtests$Yr1, ugtests$Final)
+```
+
+&lt;img src="1-preliminaries_files/figure-html/unnamed-chunk-21-1.png" height="300" style="display: block; margin: auto;" /&gt;
+
+---
+class: left, lec-logo, middle,  
+
+## Plotting and graphing in `ggplot2`
+
+For those who know it, `ggplot2` is an incredibly powerful graphing package based on the Grammar of Graphics (Wilkinson, 2005).
+
+
+``` r
+library(ggplot2)
+
+ggplot(ugtests, aes(x = Yr1, y = Final)) +
+  geom_point(color = "blue") + 
+  labs(x = "Year 1", y = "Final") + 
+  theme_minimal()
+```
+
+&lt;img src="1-preliminaries_files/figure-html/unnamed-chunk-22-1.png" height="300" style="display: block; margin: auto;" /&gt;
+
+---
+class: left, lec-logo, middle,  
+
+## Pairplots
+
+Pairplots are very useful summary plots to understand univariate and bivariate patterns in data, and are often a useful precursor to modeling efforts.  It's important for data types to be well defined for pairplots to work effectively.
+
+
+``` r
+library(GGally)
+
+GGally::ggpairs(ugtests)
+```
+
+&lt;img src="1-preliminaries_files/figure-html/unnamed-chunk-23-1.png" height="300" style="display: block; margin: auto;" /&gt;
+
+---
+class: left, lec-logo, middle,  
+
+## Documenting work in Quarto
+
+Quarto allows you to integrate your work into a document with commentary, and is a great way to record the work you have done for future reference and reproducibility.
+
+The assignments in this workshop are all set up in Quarto documents.  When you have finished them you can render them into HTML documents which will remain available in your workspace after this workshop.  Feel free to add your own text commentary or notes to these documents to help remind you of important things. 
+
+I **always** use Quarto to record my method and code in one document.
+
+---
+class: left, lec-logo, middle,  
+
+## Exercise - Plotting and recording your work
+
+For our next short exercise, we will do some practice on plotting and on recording work in Quarto.
+
+Go to our [Posit Cloud workspace](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) and continue **Assignment 01 - R Fundamentals**.
+
+Let's work on **Exercises 5 and 6**.
+
+---
+class: left, lec-logo, middle,  
+
+# &amp;#x1F389; We are ready to start modeling! &amp;#128588;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
