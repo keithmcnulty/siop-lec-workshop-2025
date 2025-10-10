@@ -1,7 +1,7 @@
 Introduction to Explanatory Statistical Modeling in R
 ================
 
-### 2025 SIOP Leading Edge Consortium Workshop
+![](https://www.siop.org/wp-content/uploads/2024/10/2025_LEC_logo_stack_cmyk.png)
 
 by Keith McNulty
 
