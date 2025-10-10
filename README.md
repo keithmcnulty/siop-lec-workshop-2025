@@ -11,7 +11,7 @@ by Keith McNulty
 :spiral_calendar: October 23, 2025  
 :alarm_clock:     08:30 - 12:00  
 :hotel:           King Room, Loews Atlanta  
-![](https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png){height=5}    [keithmcnulty/siop-lec-workshop-2025](https://github.com/keithmcnulty/siop-lec-workshop-2025)
+:book:            [keithmcnulty/siop-lec-workshop-2025](https://github.com/keithmcnulty/siop-lec-workshop-2025)
 
 -----
 
