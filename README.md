@@ -37,7 +37,7 @@ To be able to:
 * Watch this [short video](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/video/orientation.mp4) I made, which will guide you through the workshop materials and the process of setting up and using Posit Cloud, a cloud-based version of RStudio.  This is the platform we will be using for coding exercises during the workshop.
 * Use this [invite link](https://posit.cloud/spaces/688089/join?access_code=1qJ6zGSp4l9n-zAaGpjXE8OJhS3kwGJQPrDYhwbK) to access the course exercises on Posit Cloud which we will go through during the workshop. 
 * *Optional - If you are not a regular R user:* Review the module on [R fundamentals](https://keithmcnulty.github.io/siop-lec-workshop-2025/materials/talks/1-preliminaries.html#1) or read [this book chapter](https://peopleanalytics-regression-book.org/the-basics-of-the-r-programming-language.html) to ensure that you have a basic familiarity with how R works.  If you have time,
-go into the Posit Cloud workspace, open the module on R fundamentals, and try to complete the exercises in that module.  Solutions are provided via the links in the agenda.  The less time we need to spend on fundamentals in this workshop, the more time we can spend on learning how to model. 
+go into the Posit Cloud workspace, open the module on R fundamentals, and try to complete the exercises in that module.  Solutions are provided via the links in the agenda.  The less time we need to spend on fundamentals in this workshop, the more time we can spend on learning how to model. Note that exercises marked 'EXTENSION' are not essential and are intended for individuals with existing R fluency.
 
 
 ## Schedule
