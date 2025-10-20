@@ -27,6 +27,14 @@ What I hope you can say at the end of this workshop:
 &#127881; You've had fun  
 &#128075; You've met a few interesting people who work on similar things to you
 
+---
+class: left, lec-logo, middle,  
+
+## Set up Posit Cloud account and access workspace
+
+<center>
+![](./www/positcloud.png)
+</center>
 
 ---
 class: left, lec-logo, middle,  
