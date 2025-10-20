@@ -32,8 +32,10 @@ class: left, lec-logo, middle,
 
 ## Set up Posit Cloud account and access workspace
 
+<br>
+
 <center>
-![](./www/positcloud.png)
+<img src="www/positcloud.png" alt="Posit Cloud QR Code" width="250"/>
 </center>
 
 ---

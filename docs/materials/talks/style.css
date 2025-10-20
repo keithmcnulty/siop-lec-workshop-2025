@@ -275,7 +275,7 @@ strong {
 .r-logo {
   background-image: url(www/LEC.png);
   background-repeat: no-repeat;
-  background-size: 50px;
+  background-size: 20px;
   background-color: #fff;
   background-position: 99% 1%;
 }
@@ -284,7 +284,7 @@ strong {
 .lec-logo {
   background-image: url(www/LEC.png);
   background-repeat: no-repeat;
-  background-size: 200px;
+  background-size: 100px;
   background-color: #fff;
   background-position: 99% 1%;
 }
